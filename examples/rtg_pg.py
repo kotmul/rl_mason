@@ -27,6 +27,13 @@ class mlp(nn.Module):
         output = self.layer(x)
         return output
 
+def reward_to_go(rewards):
+    n = len(rewards)
+    rtgs = np.zeros_like(rewards)
+    for i in reversed(range(n)):
+        rtgs[i] = rewards[i] + (rtgs[i+1] if i+1<n else 0)
+    return rtgs
+
 def train(env_name='CartPole-v0', hidden_size=32, lr=1e-2,
           epochs=50, batch_size=5000, render=False):
     
@@ -89,7 +96,7 @@ def train(env_name='CartPole-v0', hidden_size=32, lr=1e-2,
                 batch_returns.append(ep_return)
                 batch_lens.append(ep_len)
 
-                batch_weights += [ep_return] * ep_len
+                batch_weights += list(reward_to_go(ep_rewards))
 
                 obs, done, ep_rewards = env.reset()[0], False, []
 
@@ -121,4 +128,6 @@ if __name__ == "__main__":
     parser.add_argument('--lr', type=float, default=1e-2)
     args = parser.parse_args()
     print('\nUsing Simplest formulation of policy gradient.\n')
-    train(env_name=args.env_name, epochs=5)
+    train(env_name=args.env_name, epochs=50)
+
+    # print(reward_to_go([1, 2, 3, 4, 5]))
