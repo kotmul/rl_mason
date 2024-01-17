@@ -1,2 +1,2 @@
 # rl_mason
-[url](https://spinningup.openai.com/en/latest/)
+[OpenAI Spinning Up](https://spinningup.openai.com/en/latest/)
